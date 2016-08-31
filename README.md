@@ -40,6 +40,7 @@ loading: {
   models: {
     users: false,
     todos: false,
+    ...
   },
 }
 ```
