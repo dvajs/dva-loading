@@ -36,6 +36,38 @@ describe('dva-loading', () => {
     }, 200);
   });
 
+  it('opts.effects', done => {
+    const app = dva();
+    app.use(createLoading({
+      effects: true,
+    }));
+    app.model({
+      namespace: 'count',
+      state: 0,
+      reducers: {
+        add(state) {
+          return state + 1;
+        },
+      },
+      effects: {
+        *addRemote(action, { put }) {
+          yield delay(100);
+          yield put({ type: 'add' });
+        },
+      },
+    });
+    app.router(() => 1);
+    app.start();
+
+    expect(app._store.getState().loading).toEqual({ global: false, models: {}, effects: {} });
+    app._store.dispatch({ type: 'count/addRemote' });
+    expect(app._store.getState().loading).toEqual({ global: true, models: { count: true }, effects: { 'count/addRemote': true } });
+    setTimeout(_ => {
+      expect(app._store.getState().loading).toEqual({ global: false, models: { count: false }, effects: { 'count/addRemote': false } });
+      done();
+    }, 200);
+  });
+
   it('opts.namespace', () => {
     const app = dva();
     app.use(createLoading({
