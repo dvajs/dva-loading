@@ -8,7 +8,6 @@ function createLoading(opts = {}) {
     global: false,
     models: {},
   };
-  let globalCount = 0;
 
   const extraReducers = {
     [namespace](state = initialState, { type, payload }) {
@@ -16,14 +15,18 @@ function createLoading(opts = {}) {
         case SHOW:
           return {
             ...state,
-            global: globalCount > 0,
+            global: true,
             models: { ...state.models, [payload]:true },
           };
         case HIDE:
+          const models = { ...state.models, [payload]:false };
+          const global = Object.keys(models).some(namespace => {
+            return models[namespace];
+          });
           return {
             ...state,
-            global: globalCount > 0,
-            models: { ...state.models, [payload]:false }
+            global,
+            models,
           };
         default:
           return state;
@@ -33,10 +36,8 @@ function createLoading(opts = {}) {
 
   function onEffect(effect, { put }, model) {
     return function*(...args) {
-      globalCount = globalCount + 1;
       yield put({ type: SHOW, payload: model.namespace });
       yield effect(...args);
-      globalCount = globalCount - 1;
       yield put({ type: HIDE, payload: model.namespace });
     };
   }
@@ -44,7 +45,7 @@ function createLoading(opts = {}) {
   return {
     extraReducers,
     onEffect,
-  }
+  };
 }
 
 export default createLoading;

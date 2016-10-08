@@ -17,6 +17,7 @@
   "main": "lib/index.js",
   "scripts": {
     "test": "cross-env NODE_ENV=test nyc mocha --no-timeouts",
+    "debug": "mocha --require babel-register --require test/setup --no-timeouts",
     "build": "rimraf lib && babel src --out-dir lib",
     "report": "nyc report --reporter=html",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
@@ -26,7 +27,8 @@
       "src/**/*.js"
     ],
     "require": [
-      "babel-register"
+      "babel-register",
+      "./test/setup"
     ],
     "sourceMap": false,
     "instrument": false
@@ -44,9 +46,12 @@
     "babel-register": "^6.14.0",
     "coveralls": "^2.11.11",
     "cross-env": "^2.0.1",
+    "dva": "^1.0.0",
     "expect": "^1.20.2",
+    "jsdom": "^9.6.0",
     "mocha": "^3.0.2",
     "nyc": "^8.1.0",
+    "react": "^15.3.2",
     "rimraf": "^2.5.4"
   },
   "peerDependencies": {
