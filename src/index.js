@@ -52,9 +52,12 @@ function createLoading(opts = {}) {
   function onEffect(effect, { put }, model, actionType) {
     const { namespace } = model;
     return function*(...args) {
-      yield put({ type: SHOW, payload: { namespace, actionType } });
-      yield effect(...args);
-      yield put({ type: HIDE, payload: { namespace, actionType } });
+      try{
+        yield put({ type: SHOW, payload: { namespace, actionType } });
+        yield effect(...args);
+      }finally {
+        yield put({ type: HIDE, payload: { namespace, actionType } });
+      }
     };
   }
 
